@@ -8,12 +8,20 @@ WHERE Orders.ShipperId = 1;
 
 b.
 ```SQL
-SELECT Employees.LastName
-FROM Employees
-INNER JOIN Orders
-ON Employees.EmployeeID = Orders.EmployeeID
-GROUP BY Orders.EmployeeID
-ORDER BY COUNT(Orders.EmployeeID) DESC LIMIT 1;
+SELECT e.LastName
+FROM (
+	SELECT EmployeeId, COUNT(EmployeeID) as ORDER_COUNT
+	FROM Orders
+	GROUP BY EmployeeID
+) as o, Employees as e
+WHERE o.ORDER_COUNT = (
+  SELECT MAX(ORDER_COUNT)
+  FROM (
+      SELECT EmployeeId, COUNT(EmployeeID) as ORDER_COUNT
+      FROM Orders
+      GROUP BY EmployeeID
+  )
+) and e.EmployeeID = o.EmployeeID
 ```
 Peacock
 
